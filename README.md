@@ -12,15 +12,9 @@ Firebase will be used to store all the created data.
 1. For android, add google-services.json retrieved from Firebase console at android/app directory.
 2. Modify local.properties sdk.dir and flutter.dir.
 3. Execute `flutter run` in your workspace. That's it.
+
+
 For help getting started with Flutter, view Flutter online
 [documentation](https://flutter.io/).
-
-
-
-# flutter_firebase_crud_app
-
-A new Flutter project.
-
-## Getting Started
 
 
