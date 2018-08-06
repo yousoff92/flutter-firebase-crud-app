@@ -10,53 +10,153 @@ import 'package:firebase_database/firebase_database.dart';
 final DatabaseReference itemRef =
     FirebaseDatabase.instance.reference().child("item");
 
-class ItemInheritedWidget extends InheritedWidget {
-  final int noOfSelection;
-
-  ItemInheritedWidget(key, child)
-      : noOfSelection = 0,
-        super(key: key, child: child);
-
-  @override
-  bool updateShouldNotify(ItemInheritedWidget old) =>
-      old.noOfSelection != noOfSelection;
-
-  static ItemInheritedWidget of(BuildContext context) {
-    return context.inheritFromWidgetOfExactType(ItemInheritedWidget);
-  }
-}
+/*
+*   Parent widget
+*/
 
 class ItemScreen extends StatefulWidget {
   static String pageTitle = "Item";
   static String routeName = "/item";
 
   @override
-  State<StatefulWidget> createState() => new ItemScreenState();
+  State<StatefulWidget> createState() {
+    return new ItemState();
+  }
 }
 
-class ItemScreenState extends State<ItemScreen> {
-  List<Item> items = new List();
+class ItemState extends State<ItemScreen> {
+  int noOfSelectedItems = 0;
+  List<Item> selectedItems = new List();
+  AppBar appBar = getDefaultAppBar();
 
-  int noOfSelected = 0;
+  static getDefaultAppBar() => ( new AppBar(title: new Text("Item"),)); 
 
-  Scaffold scaffold;
-  AppBar appBar;
-  BuildContext buildContext;
+  int onPress(bool selected, Item selectedItem) {
+    setState(() {
+      if(selected) {
+        noOfSelectedItems++;
+        selectedItems.add(selectedItem);
+      } else {
+        noOfSelectedItems--;
+        selectedItems.removeWhere((item) => item.key == selectedItem.key);
+      }
+    });
 
-  ItemScreenState() {
-    // Listeners
-    itemRef.onChildAdded.listen(_onEntryAdded);
-    itemRef.onChildChanged.listen(_onEntryEdited);
+    if(noOfSelectedItems > 0) {
+        appBar = getSelectionAppBar();
+    } else {
+      appBar = getDefaultAppBar();
+    }
 
-    print("Init");
-
-    // Layout
-    scaffold = _getDefaultScaffold(buildContext);
+    return noOfSelectedItems;
   }
 
-  /*
-    Listeners
-  */
+  AppBar getSelectionAppBar() {
+    return new AppBar(
+        title: new Text("Selected Item " + this.noOfSelectedItems.toString()),
+        actions: <Widget>[
+          new IconButton(
+          icon: new Icon(Icons.delete),
+          tooltip: 'Delete',
+          onPressed: _onPressedDelete,
+        ),
+        ],
+      );
+  }
+
+  void _onPressedDelete() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, 
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Confirm Deletion"),
+          content: new Text("Are you sure you want to delete these item(s) ? "),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("No"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            new FlatButton(
+              child: new Text("Yes"),
+              onPressed: () {
+                confirmedDelete();
+                Navigator.of(context).pop();
+
+                setState(() {
+                  appBar = getDefaultAppBar();
+                });
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void confirmedDelete() {
+    for(Item item in selectedItems) {
+      itemRef.child(item.key).remove();
+      print("Removed " + item.key);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ItemInheritedWidget(
+      noOfSelectedItems : noOfSelectedItems,
+      onPress : onPress,
+      appBar : appBar,
+      child : ItemListStateful(),
+    );
+  }
+}
+
+class ItemInheritedWidget extends InheritedWidget {
+
+  ItemInheritedWidget({
+    Key key,
+    this.noOfSelectedItems,
+    this.onPress,
+    this.appBar,
+    Widget child,
+  }) : super(key : key, child : child);
+
+  final int noOfSelectedItems;
+  final Function onPress;
+  final AppBar appBar;
+
+  @override
+  bool updateShouldNotify(ItemInheritedWidget old) => true;
+
+  static ItemInheritedWidget of(BuildContext context) {
+    return context.inheritFromWidgetOfExactType(ItemInheritedWidget);
+  }
+}
+
+/*
+*   The child widgets
+*/
+
+class ItemListStateful extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => new ItemList();
+}
+
+class ItemList extends State<ItemListStateful> {
+
+  List<Item> items = new List();
+
+  static getDefaultDrawer(context) => ( new DrawerNavigation().getDrawer(context));
+
+  ItemList() {
+    itemRef.onChildAdded.listen(_onEntryAdded);
+    itemRef.onChildChanged.listen(_onEntryEdited);
+    itemRef.onChildRemoved.listen(_onEntryRemoved);
+  }
 
   _onEntryAdded(Event event) {
     setState(() {
@@ -73,53 +173,11 @@ class ItemScreenState extends State<ItemScreen> {
     });
   }
 
-  int _onLongPressItem(bool selected, context) {
+  _onEntryRemoved(Event event) {
     setState(() {
-      selected ? noOfSelected++ : noOfSelected--;
-
-      if (this.noOfSelected > 0) {
-        appBar = new AppBar(
-          title: new Text("Selected item " + this.noOfSelected.toString()),
-        );
-
-        print("In");
-
-        // AppBar appBar = new AppBar(
-        //   title: new Text("Selected Item" + this.noOfSelected.toString()),
-        //   actions: <Widget>[
-        //     new IconButton(
-        //     icon: new Icon(Icons.delete),
-        //     tooltip: 'Delete',
-        //     onPressed: _deleteItem,
-        //   ),
-        //   ],
-        // );
-
-        scaffold = new Scaffold(
-          appBar: appBar,
-          body: new ListView.builder(
-            itemBuilder: (BuildContext context, int index) =>
-                new ItemStateful(items[index], _onLongPressItem),
-            itemCount: items.length,
-          ),
-          floatingActionButton: new FloatingActionButton(
-            onPressed: () => _openAddDialog(),
-            child: new Icon(Icons.add),
-          ),
-        );
-      } else {
-        //appBar = _getDefaultAppBar();
-        scaffold = _getDefaultScaffold(context);
-      }
+      items.removeWhere((item) => item.key == event.snapshot.key);
     });
-
-    print("General selected " + this.noOfSelected.toString());
-    return this.noOfSelected;
   }
-
-  /*
-    Add, Edit
-  */
 
   Future _openAddDialog() async {
     Item item = await Navigator.of(context).push(new MaterialPageRoute<Item>(
@@ -133,98 +191,70 @@ class ItemScreenState extends State<ItemScreen> {
     }
   }
 
-  _deleteItem() {
-    print("Delete");
-  }
-
-  /*
-    Layout
-  */
-
-  static getDefaultAppBar() {
-    return new AppBar(
-      title: new Text("Item"),
-    );
-  }
-
-  static getDefaultDrawer(context) {
-    return new DrawerNavigation().getDrawer(context);
-  }
-
-  _getDefaultScaffold(context) {
-    if (context == null) {
-      return null;
-    }
-
-    print("Default scaffold");
-
-    Drawer drawer = getDefaultDrawer(context);
-    appBar = getDefaultAppBar();
-
-    return new Scaffold(
-      drawer: drawer,
-      appBar: appBar,
-      body: new ListView.builder(
-        itemBuilder: (BuildContext context, int index) =>
-            new ItemStateful(items[index], _onLongPressItem),
-        itemCount: items.length,
-      ),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: () => _openAddDialog(),
-        child: new Icon(Icons.add),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    this.buildContext = context;
+    final ItemInheritedWidget inheritedWidget = ItemInheritedWidget.of(context);
+    Drawer drawer = ItemList.getDefaultDrawer(context);
+    AppBar appBar = inheritedWidget.appBar;
 
-    // if(scaffold == null) {
-    //   scaffold = _getDefaultScaffold(context);
-    // }
-
-    Drawer drawer = ItemScreenState.getDefaultDrawer(context);
-    appBar = ItemScreenState.getDefaultAppBar();
-
-    Scaffold scaffold = new Scaffold(
-      drawer: drawer,
-      appBar: appBar,
-      body: new ListView.builder(
-        itemBuilder: (BuildContext context, int index) =>
-            new ItemStateful(items[index], _onLongPressItem),
-        itemCount: items.length,
-      ),
-      floatingActionButton: new FloatingActionButton(
+    FloatingActionButton buttons;
+    if(inheritedWidget.noOfSelectedItems == 0) {
+      buttons = new FloatingActionButton(
         onPressed: () => _openAddDialog(),
         child: new Icon(Icons.add),
-      ),
-    );
+      );
+    }
+
+    Scaffold scaffold = new Scaffold(
+          drawer: drawer,
+          appBar: appBar,
+          body: new ListView.builder(
+            itemBuilder: (BuildContext context, int index) =>
+                new ItemCardStateful(items[index]),
+            itemCount: items.length,
+          ),
+          floatingActionButton: buttons,
+        );
 
     return scaffold;
   }
 }
 
-class ItemStateful extends StatefulWidget {
+class ItemCardStateful extends StatefulWidget {
   final Item item;
-  final dynamic _onLongPressItem;
-  ItemStateful(this.item, this._onLongPressItem);
+  ItemCardStateful(this.item);
 
   @override
   State<StatefulWidget> createState() {
-    return new ItemState(item, _onLongPressItem);
+    return new ItemCard(item);
   }
 }
 
-class ItemState extends State<ItemStateful> {
+class ItemCard extends State<ItemCardStateful> {
+
   Item item;
-  dynamic onLongPressItem;
-  ItemState(this.item, this.onLongPressItem);
-
   bool selected = false;
-  int noOfSelected = 0;
+  ItemCard(this.item);
 
-  _openEditDialog(BuildContext context, Item item) {
+  void _onTap(BuildContext context) {
+    final ItemInheritedWidget inheritedWidget = ItemInheritedWidget.of(context);
+    if(inheritedWidget.noOfSelectedItems > 0) {
+      this.selected = !this.selected;
+      int selectedItems = inheritedWidget.onPress(this.selected, this.item);
+      print("Tap " + selectedItems.toString());
+    } else {
+      _openEditDialog(context, this.item);
+    }
+  }
+
+  void _onLongPress(BuildContext context) {
+    final ItemInheritedWidget inheritedWidget = ItemInheritedWidget.of(context);
+    this.selected = !this.selected;
+    int selectedItems = inheritedWidget.onPress(this.selected, this.item);
+    print("Long press " + selectedItems.toString());
+  }
+
+  void _openEditDialog(BuildContext context, Item item) {
     Navigator
         .of(context)
         .push(
@@ -236,22 +266,21 @@ class ItemState extends State<ItemStateful> {
           ),
         )
         .then((updatedItem) {
-      if (updatedItem != null) {
-        itemRef.child(item.key).set((updatedItem as Item).toJson());
-      }
+          if (updatedItem != null) {
+            itemRef.child(item.key).set((updatedItem as Item).toJson());
+          }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     ListTile listTile = new ListTile(
       leading: const Icon(Icons.info),
       title: new Text(item.name),
       subtitle: new Text(item.description),
       trailing: new Text(item.dateTime.month.toString()),
       selected: selected,
-      onTap: () => _onTap(context, item),
+      onTap: () => _onTap(context),
       onLongPress: () => _onLongPress(context),
     );
 
@@ -260,31 +289,5 @@ class ItemState extends State<ItemStateful> {
           mainAxisSize: MainAxisSize.min, children: <Widget>[listTile]),
     );
   }
-
-  /*  
-    Actions
-  */
-
-  _onLongPress(context) {
-    setState(() {
-      this.selected = !this.selected;
-      this.noOfSelected = onLongPressItem(selected, context);
-      print(this.noOfSelected);
-    });
-  }
-
-  _onTap(BuildContext context, Item item) {
-      setState(() {
-          this.selected = !this.selected;
-      });
-      print("onTap");
-      print(this.noOfSelected);
-  }
-      // if(noOfSelected == 0 ) {
-      //   _openEditDialog(context,item);
-      // } else {
-
-      // }
-  
-
 }
+
