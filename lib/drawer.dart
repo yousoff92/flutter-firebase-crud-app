@@ -14,6 +14,9 @@ class DrawerNavigation {
     );
     return drawerHeader;
   }
+  
+
+  // TODO - Prevent navigation from stacks
 
   List<Widget> _items(context) {
     List<Widget> items = new List();
@@ -45,8 +48,7 @@ class DrawerNavigation {
   }
 
   Drawer getDrawer(context) {
-    
-    var navigations = [];
+    List<Widget> navigations = [];
     navigations.add(_header());
 
     for (Widget item in _items(context)) {
