@@ -1,0 +1,55 @@
+Management App
+
+All model must have
+
+Name
+Description
+Created Date
+Created By
+Updated Date
+Updated By
+
+
+
+1. Vehicle Management
+- Vehicle
+  - Name
+  - Year
+  - Monthly Insurance
+  - Image
+  - Maintenance List
+    - Name
+    - Description
+    - items
+      - name
+      - price
+    - Service Date
+    - Service Location
+    - Current Mileage
+    - Next service
+
+2. Asset management
+- Asset
+  - Name
+  - Image
+  - Description
+  - Price
+  - Buy Date
+  - Buy Place
+
+3. Stock Management
+- Stock
+  - Name
+  - Category
+  - Price
+  - Amount
+  - Expiry Date
+  - Buy Place
+  - Buy Date
+
+4. Finance
+- Name
+- Description
+- Price
+- Transaction Date
+- Transaction By
