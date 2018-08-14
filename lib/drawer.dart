@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'screens/home.dart';
 import 'screens/item.dart';
+import 'screens/vehicle.dart';
 
 class DrawerNavigation {
 
@@ -14,6 +15,8 @@ class DrawerNavigation {
     );
     return drawerHeader;
   }
+
+  Divider divider = new Divider( height: 10.0,);
   
 
   // TODO - Prevent navigation from stacks
@@ -22,28 +25,41 @@ class DrawerNavigation {
     List<Widget> items = new List();
     items.add(
       new ListTile(
-        leading: const Icon(Icons.event_seat),
+        leading: const Icon(Icons.home),
         title: new Text(HomeScreen.pageTitle),
         onTap: () {
           Navigator.pushNamed(context, HomeScreen.routeName);
         },
       )
     );
+    items.add(divider);
     items.add(
       new ListTile(
-        leading: const Icon(Icons.event_seat),
+        leading: const Icon(Icons.event_note),
         title: new Text(ItemScreen.pageTitle),
         onTap: () {
           Navigator.pushNamed(context, ItemScreen.routeName);
         },
       )
     );
+    items.add(divider);
+    items.add(
+      new ListTile(
+        leading: const Icon(Icons.directions_car),
+        title: new Text(VehicleScreen.pageTitle),
+        onTap: () {
+          Navigator.pushNamed(context, VehicleScreen.routeName);
+        },
+      )
+    );
+    items.add(divider);
     items.add(
       new AboutListTile(
-        applicationName: "Flutter Firebase CRUD App",
+        applicationName: "Management App",
         applicationVersion: "0.1",
       )
     );
+    items.add(divider);
     return items;
   }
 
@@ -55,8 +71,8 @@ class DrawerNavigation {
       navigations.add(item);
     }
 
-    ListView listView = new ListView(children: navigations,);
-    Drawer drawer = new Drawer(child: listView,);
+    ListView listView = new ListView(children: navigations, );
+    Drawer drawer = new Drawer(child: listView, );
     return drawer;
   }
 
