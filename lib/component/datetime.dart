@@ -11,7 +11,8 @@ class DateTimePicker extends StatelessWidget {
     this.selectedDate,
     this.selectedTime,
     this.selectDate,
-    this.selectTime
+    this.selectTime,
+    this.onlyFutureDate=false
   }) : super(key: key);
 
   final String labelText;
@@ -19,14 +20,29 @@ class DateTimePicker extends StatelessWidget {
   final TimeOfDay selectedTime;
   final ValueChanged<DateTime> selectDate;
   final ValueChanged<TimeOfDay> selectTime;
+  final bool onlyFutureDate;
 
   Future<Null> _selectDate(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: new DateTime(2015, 8),
-      lastDate: new DateTime(2101),
-    );
+    DateTime picked;
+
+    if(onlyFutureDate) {
+      DateTime today = DateTime.now();
+      picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        firstDate: new DateTime(2015, 8),
+        lastDate: new DateTime(2025),
+        selectableDayPredicate: (date) => today.compareTo(date) >= 0 ? true : false,
+      );
+    } else {
+      picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        firstDate: new DateTime(2015, 8),
+        lastDate: new DateTime(2025)
+      );
+    }
+
     if (picked != null && picked != selectedDate)
       selectDate(picked);
   }
@@ -42,12 +58,6 @@ class DateTimePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("Inside dateTime build");
-    print(selectedDate == null);
-    print(selectedDate);
-    print(new DateFormat.yMMMd().format(selectedDate));
-
-
     return new Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: <Widget>[

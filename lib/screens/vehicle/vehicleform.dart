@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../model/Vehicle.dart';
 import '../../model/VehicleMaintenance.dart';
+import '../../model/MaintenanceItem.dart';
 import 'maintenanceform.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
@@ -200,22 +201,33 @@ class VehicleFormState extends State<VehicleForm> {
 
     for (var m in maintenances) {
 
-      String leading = "";
+      String leadingStr = "";
 
       if(m.serviceDate != null) {
         String monthDay = new DateFormat("MMM d").format(m.serviceDate);
         String year = new DateFormat("yyyy").format(m.serviceDate);
-        leading = monthDay + "\n" + year;
+        leadingStr = monthDay + "\n" + year;
       }
 
-      Text text = new Text(leading, softWrap: true, 
+      Text leading = new Text(leadingStr, softWrap: true, 
         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.0, ),
         textAlign: TextAlign.center);
 
+      double totalAmount = 0.0;
+      for (MaintenanceItem item in m.maintenanceItems) {
+        totalAmount += item.price;
+      }
+
+      String trailStr = "RM " + totalAmount.toStringAsFixed(2);
+      Text trailing = new Text(trailStr, softWrap: true, 
+        style: TextStyle(fontSize: 12.0, ),
+        textAlign: TextAlign.right);
+
       ListTile l = new ListTile(
-        leading: text,
+        leading: leading,
         title: new Text(m.name),
         onTap: () => _onTapMaintenance(context, m),
+        trailing: trailing,
       );
       children.add(l);
     }

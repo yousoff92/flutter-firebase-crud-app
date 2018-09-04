@@ -57,6 +57,13 @@ Updated By
 4. Finance
 - Name
 - Description
+- category (dropdown)
+  - Food
+  - Travel
+  - Home
+  - Entertainment
+  - Other
 - Price
+- Location
 - Transaction Date
 - Transaction By

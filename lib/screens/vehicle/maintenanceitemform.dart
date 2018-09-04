@@ -87,6 +87,7 @@ class MaintenanceItemFormState extends State<MaintenanceItemForm> {
         decoration: new InputDecoration(
           hintText: "Price",
           labelText: "Price",
+          prefixText: "RM ",
         ),
         onSaved: (val) {
           _item.price = double.parse(val != null ? val : "0");

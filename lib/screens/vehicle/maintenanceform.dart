@@ -214,7 +214,7 @@ class VehicleMaintenanceFormState extends State<MaintenanceForm> {
 
       ListTile l = new ListTile(
         title: new Text(m.name),
-        trailing: new Text(m.price.toString()),
+        trailing: new Text("RM " + m.price.toStringAsFixed(2)),
         onTap: () => _onTapMaintenance(context, m),
       );
       children.add(l);

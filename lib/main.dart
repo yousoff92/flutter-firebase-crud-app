@@ -5,6 +5,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'screens/home.dart';
 import 'screens/item.dart';
 import 'screens/vehicle.dart';
+import 'screens/expenses.dart';
 
 void main() {
   FirebaseDatabase.instance.setPersistenceEnabled(true);
@@ -18,10 +19,11 @@ class MyApp extends StatelessWidget {
     var routes = <String, WidgetBuilder> {
       '/item' : (BuildContext context) => new ItemScreen(),
       '/vehicle' : (BuildContext context) => new VehicleScreen(),
+      '/expenses' : (BuildContext context) => new ExpensesScreen(),
     };
 
     return new MaterialApp(
-      title: 'Flutter Firebase CRUD app',
+      title: 'Management App',
       home: new HomeScreen(),
       theme: new ThemeData(
         primaryColor: Colors.blue,
