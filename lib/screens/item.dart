@@ -151,8 +151,6 @@ class ItemList extends State<ItemListStateful> {
 
   List<Item> items = new List();
 
-  static getDefaultDrawer(context) => ( new DrawerNavigation().getDrawer(context));
-
   ItemList() {
     itemRef.onChildAdded.listen(_onEntryAdded);
     itemRef.onChildChanged.listen(_onEntryEdited);
@@ -195,7 +193,6 @@ class ItemList extends State<ItemListStateful> {
   @override
   Widget build(BuildContext context) {
     final ItemInheritedWidget inheritedWidget = ItemInheritedWidget.of(context);
-    Drawer drawer = ItemList.getDefaultDrawer(context);
     AppBar appBar = inheritedWidget.appBar;
 
     FloatingActionButton buttons;
@@ -207,7 +204,7 @@ class ItemList extends State<ItemListStateful> {
     }
 
     Scaffold scaffold = new Scaffold(
-          drawer: drawer,
+          drawer: new DrawerNavigation(),
           appBar: appBar,
           body: new ListView.builder(
             itemBuilder: (BuildContext context, int index) =>

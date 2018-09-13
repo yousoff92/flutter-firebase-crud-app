@@ -5,40 +5,25 @@ import 'screens/item.dart';
 import 'screens/vehicle.dart';
 import 'screens/expenses.dart';
 
-class DrawerNavigation {
+class DrawerNavigation extends StatelessWidget {
 
   UserAccountsDrawerHeader _header() {
-
-  
-
     UserAccountsDrawerHeader drawerHeader = new UserAccountsDrawerHeader(
       accountEmail: new Text("yousoff92@gmail.com"),
       accountName: new Text("Yousoff Effendy"),
       currentAccountPicture: null,);
-
-
-    // DrawerHeader drawerHeader = new DrawerHeader(
-    //   child: null,
-    //   decoration: new FlutterLogoDecoration(
-    //     style: FlutterLogoStyle.horizontal
-    //   )
-    // );
     return drawerHeader;
   }
 
-  Divider divider = new Divider( height: 10.0,);
-  
-
-  // TODO - Prevent navigation from stacks
-
-  List<Widget> _items(context) {
+   List<Widget> _items(context) {
+    Divider divider = new Divider( height: 10.0,);
     List<Widget> items = new List();
     items.add(
       new ListTile(
         leading: const Icon(Icons.home),
         title: new Text(HomeScreen.pageTitle),
         onTap: () {
-          Navigator.pushNamed(context, HomeScreen.routeName);
+          Navigator.pushReplacementNamed(context, HomeScreen.routeName);
         },
       )
     );
@@ -48,7 +33,7 @@ class DrawerNavigation {
         leading: const Icon(Icons.event_note),
         title: new Text(ItemScreen.pageTitle),
         onTap: () {
-          Navigator.pushNamed(context, ItemScreen.routeName);
+          Navigator.pushReplacementNamed(context, ItemScreen.routeName);
         },
       )
     );
@@ -58,7 +43,7 @@ class DrawerNavigation {
         leading: const Icon(Icons.directions_car),
         title: new Text(VehicleScreen.pageTitle),
         onTap: () {
-          Navigator.pushNamed(context, VehicleScreen.routeName);
+          Navigator.pushReplacementNamed(context, VehicleScreen.routeName);
         },
       )
     );
@@ -68,7 +53,7 @@ class DrawerNavigation {
         leading: const Icon(Icons.attach_money),
         title: new Text(ExpensesScreen.pageTitle),
         onTap: () {
-          Navigator.pushNamed(context, ExpensesScreen.routeName);
+          Navigator.pushReplacementNamed(context, ExpensesScreen.routeName);
         },
       )
     );
@@ -83,7 +68,9 @@ class DrawerNavigation {
     return items;
   }
 
-  Drawer getDrawer(context) {
+  @override
+  Widget build(BuildContext context) {
+    print("Drawer");
     List<Widget> navigations = [];
     navigations.add(_header());
 

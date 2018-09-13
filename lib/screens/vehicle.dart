@@ -153,8 +153,6 @@ class VehicleList extends State<VehicleListStateful> {
 
   List<Vehicle> items = new List();
 
-  static getDefaultDrawer(context) => ( new DrawerNavigation().getDrawer(context));
-
   VehicleList() {
     vehicleRef.onChildAdded.listen(_onEntryAdded);
     vehicleRef.onChildChanged.listen(_onEntryEdited);
@@ -213,7 +211,6 @@ class VehicleList extends State<VehicleListStateful> {
   @override
   Widget build(BuildContext context) {
     final VehicleInheritedWidget inheritedWidget = VehicleInheritedWidget.of(context);
-    Drawer drawer = VehicleList.getDefaultDrawer(context);
     AppBar appBar = inheritedWidget.appBar;
 
     FloatingActionButton buttons;
@@ -225,7 +222,7 @@ class VehicleList extends State<VehicleListStateful> {
     }
 
     Scaffold scaffold = new Scaffold(
-          drawer: drawer,
+          drawer: new DrawerNavigation(),
           appBar: appBar,
           body: new ListView.builder(
             itemBuilder: (BuildContext context, int index) =>

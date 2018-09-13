@@ -158,8 +158,6 @@ class ExpensesList extends State<ExpensesListStateful> {
   Widget scaffold;
   List<Expenses> items = new List();
 
-  static getDefaultDrawer(context) => ( new DrawerNavigation().getDrawer(context));
-
   @override
   void initState() {
     expensesRef.onChildAdded.listen(_onEntryAdded);
@@ -170,7 +168,6 @@ class ExpensesList extends State<ExpensesListStateful> {
   
 
   _onEntryAdded(Event event) {
-    print("_onEntryadded");
     setState(() {
       items.add(new Expenses.fromSnapshot(event.snapshot));
     });
@@ -206,7 +203,6 @@ class ExpensesList extends State<ExpensesListStateful> {
 
   Widget _buildScaffold(context) {
     final ExpensesInheritedWidget inheritedWidget = ExpensesInheritedWidget.of(context);
-    Drawer drawer = ExpensesList.getDefaultDrawer(context);
     AppBar appBar = inheritedWidget.appBar;
 
     FloatingActionButton buttons;
@@ -269,7 +265,7 @@ class ExpensesList extends State<ExpensesListStateful> {
     }
     
     return new Scaffold(
-          drawer: drawer,
+          drawer: new DrawerNavigation(),
           appBar: appBar,
           body: new ListView.builder(
             itemBuilder: (BuildContext context, int index) {

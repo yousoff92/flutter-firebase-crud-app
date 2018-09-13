@@ -15,10 +15,8 @@ class HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
 
-    Drawer drawer = new DrawerNavigation().getDrawer(context);
-
     return new Scaffold(
-      drawer: drawer,
+      drawer: new DrawerNavigation(),
       appBar: new AppBar(
         title: new Text("Home"),
       ),
