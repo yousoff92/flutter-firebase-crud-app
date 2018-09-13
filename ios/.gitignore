@@ -43,3 +43,5 @@ Icon?
 
 Pods/
 .symlinks/
+Podfile.lock
+Runner/GoogleService-Info.plist
