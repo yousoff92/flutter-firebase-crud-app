@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../model/VehicleMaintenance.dart';
-import '../../model/MaintenanceItem.dart';
+import '../../model/vehicle_maintenance.dart';
+import '../../model/maintenance_item.dart';
 import '../../component/datetime.dart';
-import 'maintenanceitemform.dart';
+import 'maintenance_item_form.dart';
 
 import 'dart:async';
 

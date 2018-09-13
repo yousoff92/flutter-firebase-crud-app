@@ -1,11 +1,12 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 import '../drawer.dart';
-import '../model/Item.dart';
-import '../screens/item/itemform.dart';
+import '../model/item.dart';
+import '../screens/item/item_form.dart';
 
-import 'package:firebase_database/firebase_database.dart';
+
 
 final DatabaseReference itemRef =
     FirebaseDatabase.instance.reference().child("item");
@@ -267,7 +268,7 @@ class ItemCard extends State<ItemCardStateful> {
         )
         .then((updatedItem) {
           if (updatedItem != null) {
-            itemRef.child(item.key).set((updatedItem as Item).toJson());
+            itemRef.child(item.key).set(updatedItem.toJson());
           }
     });
   }

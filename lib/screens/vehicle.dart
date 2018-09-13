@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import '../drawer.dart';
-import '../model/Vehicle.dart';
-import '../model/VehicleMaintenance.dart';
-import '../model/MaintenanceItem.dart';
-import '../screens/vehicle/vehicleform.dart';
+import '../model/vehicle.dart';
+import '../model/vehicle_maintenance.dart';
+import '../model/maintenance_item.dart';
+import '../screens/vehicle/vehicle_form.dart';
 
 import 'package:firebase_database/firebase_database.dart';
 

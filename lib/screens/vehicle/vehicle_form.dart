@@ -1,11 +1,13 @@
-import 'package:flutter/material.dart';
-
-import '../../model/Vehicle.dart';
-import '../../model/VehicleMaintenance.dart';
-import '../../model/MaintenanceItem.dart';
-import 'maintenanceform.dart';
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import '../../model/vehicle.dart';
+import '../../model/vehicle_maintenance.dart';
+import '../../model/maintenance_item.dart';
+import 'maintenance_form.dart';
+
+
 
 class VehicleForm extends StatefulWidget {
   static String pageTitle = "Vehicle";
@@ -159,7 +161,7 @@ class VehicleFormState extends State<VehicleForm> {
       ),
     );
 
-    Widget imageField = null;
+    // Widget imageField;
 
     Widget mileageField = new ListTile(
       leading: const Icon(Icons.info),

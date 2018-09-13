@@ -1,13 +1,14 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 import '../drawer.dart';
-import '../model/Expenses.dart';
-import '../screens/expenses/expensesform.dart';
-import 'package:intl/intl.dart';
+import '../model/expenses.dart';
+import '../screens/expenses/expenses_form.dart';
 import '../constant/constant.dart';
 
-import 'package:firebase_database/firebase_database.dart';
+
 
 final DatabaseReference expensesRef =
     FirebaseDatabase.instance.reference().child("expenses");
@@ -134,7 +135,6 @@ class ExpensesInheritedWidget extends InheritedWidget {
 
   @override
   bool updateShouldNotify(ExpensesInheritedWidget old) {
-    print("updateShouldNotify expenses");
     return true;
   }
 
@@ -148,25 +148,29 @@ class ExpensesInheritedWidget extends InheritedWidget {
 */
 
 class ExpensesListStateful extends StatefulWidget {
+
   @override
   State<StatefulWidget> createState() => new ExpensesList();
 }
 
 class ExpensesList extends State<ExpensesListStateful> {
 
+  Widget scaffold;
   List<Expenses> items = new List();
 
   static getDefaultDrawer(context) => ( new DrawerNavigation().getDrawer(context));
 
-
-  ExpensesList() {
+  @override
+  void initState() {
     expensesRef.onChildAdded.listen(_onEntryAdded);
     expensesRef.onChildChanged.listen(_onEntryEdited);
     expensesRef.onChildRemoved.listen(_onEntryRemoved);
+    super.initState();
   }
+  
 
   _onEntryAdded(Event event) {
-    print("_onEntryAdded");
+    print("_onEntryadded");
     setState(() {
       items.add(new Expenses.fromSnapshot(event.snapshot));
     });
@@ -200,10 +204,7 @@ class ExpensesList extends State<ExpensesListStateful> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    print("Building expenses list");
-
+  Widget _buildScaffold(context) {
     final ExpensesInheritedWidget inheritedWidget = ExpensesInheritedWidget.of(context);
     Drawer drawer = ExpensesList.getDefaultDrawer(context);
     AppBar appBar = inheritedWidget.appBar;
@@ -218,16 +219,18 @@ class ExpensesList extends State<ExpensesListStateful> {
 
     List<Widget> expensesList = [];
     // Order expenses in descending order
-    items.sort((a, b) => b.transactionDate.compareTo(a.transactionDate));
+    items.sort((a, b) { 
+      return b.transactionDate.compareTo(a.transactionDate); 
+    });
 
     TextStyle textStyle = new TextStyle(fontWeight: FontWeight.bold, height:1.5);
-
-    
     DateTime previousDate;
-    for (var item in items) { 
+    DateTime today = new DateTime.now();
 
+    for (var item in items) { 
       if(previousDate == null) {
-        if(item.transactionDate.difference(new DateTime.now()).inDays == 0 ) {
+        if((item.transactionDate.day == today.day) 
+          && (item.transactionDate.month == today.month)) {
           expensesList.add(
             new Padding(
               padding: new EdgeInsets.all(10.0),
@@ -246,7 +249,8 @@ class ExpensesList extends State<ExpensesListStateful> {
           );
         }
 
-      } else if (item.transactionDate.difference(previousDate).inDays == 0 ) {
+      } else if ( (item.transactionDate.day == previousDate.day) 
+          && (item.transactionDate.month == previousDate.month)) {
         // do nothing
       } else {
        expensesList.add(
@@ -258,13 +262,13 @@ class ExpensesList extends State<ExpensesListStateful> {
             ),
           );
       }
-      expensesList.add(new ExpensesCardStateful(item));
+      // print(item.name + "\t" + item.key);
+      Key myKey = new Key(item.key);
+      expensesList.add(new ExpensesCardStateful(myKey, item));
       previousDate = item.transactionDate;
     }
-
-    print(items.length);
     
-    Scaffold scaffold = new Scaffold(
+    return new Scaffold(
           drawer: drawer,
           appBar: appBar,
           body: new ListView.builder(
@@ -275,14 +279,19 @@ class ExpensesList extends State<ExpensesListStateful> {
           ),
           floatingActionButton: buttons,
         );
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    print("Building expenses list");
+    scaffold = _buildScaffold(context);
     return scaffold;
   }
 }
 
 class ExpensesCardStateful extends StatefulWidget {
   final Expenses item;
-  ExpensesCardStateful(this.item);
+  ExpensesCardStateful(Key key, this.item) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -327,7 +336,7 @@ class ExpensesCard extends State<ExpensesCardStateful> {
         )
         .then((updatedItem) {
           if (updatedItem != null) {
-            expensesRef.child(item.key).set((updatedItem as Expenses).toJson());
+            expensesRef.child(item.key).set(updatedItem.toJson());
           }
     });
   }
@@ -357,7 +366,7 @@ class ExpensesCard extends State<ExpensesCardStateful> {
       leading: icon,
       title: new Text(item.name),
       trailing: new Text("RM " + item.price.toStringAsFixed(2)),
-      selected: selected,
+      selected: selected, 
       onTap: () => _onTap(context),
       onLongPress: () => _onLongPress(context),
     );

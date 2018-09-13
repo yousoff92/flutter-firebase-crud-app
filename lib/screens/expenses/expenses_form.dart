@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-
-import '../../model/Expenses.dart';
+import 'package:quiver/strings.dart' as quiver;
+import '../../model/expenses.dart';
 import '../../constant/constant.dart';
 import '../../component/datetime.dart';
-import 'package:quiver/strings.dart' as quiver;
 
 class ExpensesForm extends StatefulWidget {
   static String pageTitle = "Expenses";
@@ -15,7 +14,6 @@ class ExpensesForm extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    print("create ItemFormState ");
     return new ItemFormState(item);
   }
 }
@@ -49,6 +47,7 @@ class ItemFormState extends State<ExpensesForm> {
       showInSnackBar('Please fix the errors in red before submitting.');
     } else {
       form.save();
+      print(_item.transactionDate);
       Navigator.of(context).pop(new Expenses.fromCode(_item.key, _item.name, _item.description, _item.createdDate, _item.createdBy, _item.updatedDate, _item.updatedBy, _item.category, _item.price, _item.location, _item.transactionDate, _item.transactionBy));
       showInSnackBar('Added new item.');
     }
@@ -56,7 +55,6 @@ class ItemFormState extends State<ExpensesForm> {
 
   @override
   Widget build(BuildContext context) {
-    print("Building expenses form");
     final Widget nameField = new ListTile(
       leading: const Icon(Icons.info),
       title: new TextFormField(
@@ -152,9 +150,9 @@ class ItemFormState extends State<ExpensesForm> {
         selectDate: (DateTime date) {
           _transactionDate = date;
           _item.transactionDate = date;
-          // setState(() {
+          setState(() {
             
-          // });
+          });
         }, labelText: "Transaction Date",
       ),
     );

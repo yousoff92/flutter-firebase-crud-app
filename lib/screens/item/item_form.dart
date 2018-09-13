@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../model/Item.dart';
+import '../../model/item.dart';
 import '../../component/datetime.dart';
 
 class ItemForm extends StatefulWidget {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../model/MaintenanceItem.dart';
+import '../../model/maintenance_item.dart';
 
 
 class MaintenanceItemForm extends StatefulWidget {
