@@ -21,6 +21,9 @@ dependencies:
   cupertino_icons: ^0.1.2
   firebase_database: "^1.0.0"
   intl: "^0.15.2"
+  charts_flutter: ^0.4.0
+  connectivity: ^0.3.0
+  shared_preferences: ^0.4.2
 
 dev_dependencies:
   flutter_test:

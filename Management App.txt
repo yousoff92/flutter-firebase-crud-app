@@ -35,7 +35,11 @@ Updated By
     - Current Mileage
     - Next service
 
-2. Asset management
+Name
+Subtitle     Last service mileage
+Image
+
+2. Inventory management
 - Asset
   - Name
   - Image
@@ -67,3 +71,11 @@ Updated By
 - Location
 - Transaction Date
 - Transaction By
+
+2. Personal Management
+
+Driving License
+Valid period : 
+
+Motorcycle License
+Valid period : 

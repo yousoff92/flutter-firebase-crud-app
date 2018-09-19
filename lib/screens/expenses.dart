@@ -23,6 +23,7 @@ class ExpensesScreen extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
+    debugPrint("[ExpensesScreen] Create state..");
     return new ExpensesState();
   }
 }
@@ -103,13 +104,13 @@ class ExpensesState extends State<ExpensesScreen> {
   void confirmedDelete() {
     for(Expenses item in selectedItems) {
       expensesRef.child(item.key).remove();
-      print("Removed " + item.key);
     }
      noOfSelectedItems = 0;
   }
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("[ExpensesState] Start build..");
     return ExpensesInheritedWidget(
       noOfSelectedItems : noOfSelectedItems,
       onPress : onPress,
@@ -158,14 +159,27 @@ class ExpensesList extends State<ExpensesListStateful> {
   Widget scaffold;
   List<Expenses> items = new List();
 
+  StreamSubscription onChildAdd;
+  StreamSubscription onChildChanged;
+  StreamSubscription onChildRemoved;
+  
   @override
   void initState() {
-    expensesRef.onChildAdded.listen(_onEntryAdded);
-    expensesRef.onChildChanged.listen(_onEntryEdited);
-    expensesRef.onChildRemoved.listen(_onEntryRemoved);
+    debugPrint("[ExpensesList] Init State..");
+    onChildAdd = expensesRef.onChildAdded.listen(_onEntryAdded);
+    onChildChanged = expensesRef.onChildChanged.listen(_onEntryEdited);
+    onChildRemoved = expensesRef.onChildRemoved.listen(_onEntryRemoved);
     super.initState();
   }
   
+  @override
+  void dispose(){
+    debugPrint("[ExpensesList] Dispose State..");
+    onChildAdd.cancel();
+    onChildChanged.cancel();
+    onChildRemoved.cancel();
+    super.dispose();
+  }
 
   _onEntryAdded(Event event) {
     setState(() {
@@ -193,9 +207,8 @@ class ExpensesList extends State<ExpensesListStateful> {
         builder: (BuildContext context) {
           return new ExpensesForm.add(new Expenses());
         },
-        fullscreenDialog: true));
+        fullscreenDialog: true),);
 
-    print("_openAddDialog");
     if (item != null) {
       expensesRef.push().set(item.toJson());
     }
@@ -279,7 +292,7 @@ class ExpensesList extends State<ExpensesListStateful> {
 
   @override
   Widget build(BuildContext context) {
-    print("Building expenses list");
+    debugPrint("[ExpensesList] Start build..");
     scaffold = _buildScaffold(context);
     return scaffold;
   }
@@ -305,8 +318,7 @@ class ExpensesCard extends State<ExpensesCardStateful> {
     final ExpensesInheritedWidget inheritedWidget = ExpensesInheritedWidget.of(context);
     if(inheritedWidget.noOfSelectedItems > 0) {
       this.selected = !this.selected;
-      int selectedItems = inheritedWidget.onPress(this.selected, this.item);
-      print("Tap " + selectedItems.toString());
+      inheritedWidget.onPress(this.selected, this.item);
     } else {
       _openEditDialog(context, this.item);
     }
@@ -315,8 +327,7 @@ class ExpensesCard extends State<ExpensesCardStateful> {
   void _onLongPress(BuildContext context) {
     final ExpensesInheritedWidget inheritedWidget = ExpensesInheritedWidget.of(context);
     this.selected = !this.selected;
-    int selectedItems = inheritedWidget.onPress(this.selected, this.item);
-    print("Long press " + selectedItems.toString());
+    inheritedWidget.onPress(this.selected, this.item);
   }
 
   void _openEditDialog(BuildContext context, Expenses item) {

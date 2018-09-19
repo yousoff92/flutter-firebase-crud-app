@@ -4,6 +4,8 @@ import 'screens/home.dart';
 import 'screens/item.dart';
 import 'screens/vehicle.dart';
 import 'screens/expenses.dart';
+import 'screens/personal.dart';
+import 'screens/settings.dart';
 
 class DrawerNavigation extends StatelessWidget {
 
@@ -30,10 +32,10 @@ class DrawerNavigation extends StatelessWidget {
     items.add(divider);
     items.add(
       new ListTile(
-        leading: const Icon(Icons.event_note),
-        title: new Text(ItemScreen.pageTitle),
+        leading: const Icon(Icons.person),
+        title: new Text(PersonalScreen.pageTitle),
         onTap: () {
-          Navigator.pushReplacementNamed(context, ItemScreen.routeName);
+          Navigator.pushReplacementNamed(context, PersonalScreen.routeName);
         },
       )
     );
@@ -47,13 +49,23 @@ class DrawerNavigation extends StatelessWidget {
         },
       )
     );
-        items.add(divider);
+    items.add(divider);
     items.add(
       new ListTile(
         leading: const Icon(Icons.attach_money),
         title: new Text(ExpensesScreen.pageTitle),
         onTap: () {
           Navigator.pushReplacementNamed(context, ExpensesScreen.routeName);
+        },
+      )
+    );
+    items.add(divider);
+    items.add(
+      new ListTile(
+        leading: const Icon(Icons.settings),
+        title: new Text(SettingsScreen.pageTitle),
+        onTap: () {
+          Navigator.pushReplacementNamed(context, SettingsScreen.routeName);
         },
       )
     );
@@ -70,7 +82,7 @@ class DrawerNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("Drawer");
+    debugPrint("[DrawerNavigation] Start build..");
     List<Widget> navigations = [];
     navigations.add(_header());
 
