@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
       title: 'Management App',
       home: new HomeScreen(),
       theme: new ThemeData(
-        primaryColor: Colors.blue,
+        primaryColor: Colors.teal,
       ),
       routes: routes,
     );

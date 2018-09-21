@@ -7,6 +7,7 @@ import '../drawer.dart';
 import '../model/expenses.dart';
 import '../screens/expenses/expenses_form.dart';
 import '../constant/constant.dart';
+import '../services/authentication.dart';
 
 
 
@@ -210,7 +211,13 @@ class ExpensesList extends State<ExpensesListStateful> {
         fullscreenDialog: true),);
 
     if (item != null) {
-      expensesRef.push().set(item.toJson());
+      await Authentication.getStaticCurrentUser().then((user) {
+        if(user != null) {
+          item.createdBy = user.displayName;
+        }
+        item.createdDate = new DateTime.now();
+        expensesRef.push().set(item.toJson());
+      });
     }
   }
 

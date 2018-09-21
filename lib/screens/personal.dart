@@ -131,7 +131,7 @@ class PersonalState extends State<PersonalScreen> {
       triggerInsertion++;
     } else {
       for (Solat solat in waktuSolatList) {
-        if (solat.dateTime.month == today.month &&
+        if (solat.dateTime.month == today.month && solat.dateTime.day == today.day &&
             solat.dateTime.year == today.year && zone == solat.zone) {
               isRequireRequestJson = false;
               break;
@@ -176,7 +176,7 @@ class PersonalState extends State<PersonalScreen> {
     DateTime today = DateTime.now();
 
     Solat s = waktuSolatList.firstWhere((solat) {
-      return (solat.dateTime.month == today.month &&
+      return (solat.dateTime.month == today.month && solat.dateTime.day == today.day && 
           solat.dateTime.year == today.year);
     }, orElse: () => null);
 
