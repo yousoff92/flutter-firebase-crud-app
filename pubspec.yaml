@@ -26,6 +26,7 @@ dependencies:
   connectivity: ^0.3.0
   shared_preferences: ^0.4.2
   google_sign_in: ^3.0.5
+  cached_network_image: "^0.4.1"
 
 dev_dependencies:
   flutter_test:
