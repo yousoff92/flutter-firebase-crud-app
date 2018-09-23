@@ -7,6 +7,8 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import '../drawer.dart';
 import '../model/expenses.dart';
 import '../component/timechart.dart';
+import '../component/barchart.dart';
+import '../constant/constant.dart';
 
 final DatabaseReference expensesRef =
     FirebaseDatabase.instance.reference().child("expenses");
@@ -63,12 +65,26 @@ class HomeScreenState extends State<HomeScreen> {
     ];
   }
 
+  static List<charts.Series<BarChartItem, String>> _createExpensesCategoryData(data) {
+    return [
+      new charts.Series<BarChartItem, String>(
+        id: 'ExpensesCategory',
+        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+        domainFn: (BarChartItem item, _) => item.key,
+        measureFn: (BarChartItem item, _) => item.value,
+        data: data,
+      )
+    ];
+  }
+
   Widget _buildExpenses() {
     DateTime today = new DateTime.now();
     double sum = 0.0;
 
-    List<TimeSeriesItem> expensesChartData = new List();
     Map<DateTime,num> expensesChartMap = new Map();
+    List<TimeSeriesItem> expensesChartData = new List();
+    Map<String,num> expensesCategoryMap = new Map();
+    List<BarChartItem> expensesCategoryData = new List();
     expensesList.sort((a, b) {
       return a.transactionDate.compareTo(b.transactionDate);
     });
@@ -80,17 +96,33 @@ class HomeScreenState extends State<HomeScreen> {
       sum += expenses.price;
 
       DateTime t = new DateTime(expenses.transactionDate.year, expenses.transactionDate.month, expenses.transactionDate.day);
+      String c = expenses.category ?? Constant.CATEGORY_OTHER;
 
+      // For timeseries chart
       if(expensesChartMap.containsKey(t)) {
         expensesChartMap[t] = expensesChartMap[t] + expenses.price;
       } else {
         expensesChartMap[t] = expenses.price;
       }
+
+      // For barchart
+        if(expensesCategoryMap.containsKey(c)) {
+          expensesCategoryMap[c] = expensesCategoryMap[c] + expenses.price;
+        } else {
+          expensesCategoryMap[c] = expenses.price;
+        }
+      
+      
     });
 
     expensesChartMap.forEach((t,n) {
       expensesChartData
         .add(new TimeSeriesItem(t, n));
+    });
+
+    expensesCategoryMap.forEach((t,n) {
+      expensesCategoryData
+        .add(new BarChartItem(t, n));
     });
 
     Widget chart;
@@ -101,7 +133,13 @@ class HomeScreenState extends State<HomeScreen> {
       );
     }
 
-    // todo + tooltip utk chart
+    Widget expensesCategoryChart;
+    if(expensesCategoryData != null) {
+      expensesCategoryChart = new SimpleBarChart(
+        _createExpensesCategoryData(expensesCategoryData),
+        animate: true,
+      );
+    }
 
     return new Card(
         child: new Column(children: <Widget>[
@@ -113,7 +151,8 @@ class HomeScreenState extends State<HomeScreen> {
         subtitle: new Text(new DateFormat('MMMM y').format(today)),
         trailing: new Text("RM " + sum.toStringAsFixed(2)),
       ),
-      new ListTile(title: Container(child: chart, height: 200.0)),
+      new ListTile(title: new Text("By date"), subtitle: Container(child: chart, height: 200.0)),
+      new ListTile(title: new Text("By category"), subtitle: Container(child: expensesCategoryChart, height: 200.0)),
     ]));
   }
 
