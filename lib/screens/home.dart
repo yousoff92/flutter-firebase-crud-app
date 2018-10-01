@@ -88,7 +88,7 @@ class HomeScreenState extends State<HomeScreen> {
     expensesList.sort((a, b) {
       return a.transactionDate.compareTo(b.transactionDate);
     });
-
+    
     expensesList.where((expenses) {
       return (expenses.transactionDate.month == today.month &&
           expenses.transactionDate.year == today.year);
@@ -96,7 +96,7 @@ class HomeScreenState extends State<HomeScreen> {
       sum += expenses.price;
 
       DateTime t = new DateTime(expenses.transactionDate.year, expenses.transactionDate.month, expenses.transactionDate.day);
-      String c = expenses.category ?? Constant.CATEGORY_OTHER;
+      String c = expenses.category != null ? (expenses.category.length > 7 ? expenses.category.substring(0, 6) + "..." : expenses.category) : Constant.CATEGORY_OTHER;
 
       // For timeseries chart
       if(expensesChartMap.containsKey(t)) {
@@ -111,8 +111,8 @@ class HomeScreenState extends State<HomeScreen> {
         } else {
           expensesCategoryMap[c] = expenses.price;
         }
-      
-      
+
+        
     });
 
     expensesChartMap.forEach((t,n) {
@@ -125,35 +125,39 @@ class HomeScreenState extends State<HomeScreen> {
         .add(new BarChartItem(t, n));
     });
 
-    Widget chart;
-    if (expensesChartData.isNotEmpty) {
-      chart = new SimpleTimeSeriesChart(
-        _createExpensesData(expensesChartData),
-        animate: true,
-      );
-    }
-
-    Widget expensesCategoryChart;
-    if(expensesCategoryData != null) {
-      expensesCategoryChart = new SimpleBarChart(
-        _createExpensesCategoryData(expensesCategoryData),
-        animate: true,
-      );
-    }
-
-    return new Card(
-        child: new Column(children: <Widget>[
-      new ListTile(
+    List<Widget> widgets = new List<Widget>();
+    widgets.add(new ListTile(
         title: new Text(
           "Expenses",
           style: TextStyle(fontSize: 24.0),
         ),
         subtitle: new Text(new DateFormat('MMMM y').format(today)),
         trailing: new Text("RM " + sum.toStringAsFixed(2)),
-      ),
-      new ListTile(title: new Text("By date"), subtitle: Container(child: chart, height: 200.0)),
-      new ListTile(title: new Text("By category"), subtitle: Container(child: expensesCategoryChart, height: 200.0)),
-    ]));
+      ));
+
+    if (expensesChartData.isNotEmpty) {
+      Widget chart = new SimpleTimeSeriesChart(
+        _createExpensesData(expensesChartData),
+        animate: true,
+      );
+      widgets.add(
+       new ListTile(title: new Text("By date"), subtitle: Container(child: chart, height: 200.0))
+      );
+    }
+
+    if(expensesCategoryData.isNotEmpty) {
+      Widget expensesCategoryChart = new SimpleBarChart(
+        _createExpensesCategoryData(expensesCategoryData),
+        animate: true,
+      );
+      widgets.add(
+        new ListTile(title: new Text("By category"), subtitle: Container(child: expensesCategoryChart, height: 200.0))
+      );
+    }
+
+    return new Card(
+        child: new Column(children: widgets)
+    );
   }
 
   // End expenses

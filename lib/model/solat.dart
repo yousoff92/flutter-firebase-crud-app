@@ -59,7 +59,9 @@ class Solat {
   }
 
   Solat.fromRequestJson(Map<String, dynamic> json, String zone) {
-    dateTime = new DateFormat("dd-MMM-yyyy").parse(json["date"]);
+
+    String mappedDate = _getMappedDate(json["date"]);
+    dateTime = new DateFormat("dd-MMM-yyyy").parse(mappedDate);
 
     DateFormat parseDf = new DateFormat("HH:mm:ss");
     DateFormat formatDf = new DateFormat("h:mm a");
@@ -73,5 +75,22 @@ class Solat {
     this.maghrib = formatDf.format(parseDf.parse(json['maghrib']));
     this.isyak = formatDf.format(parseDf.parse(json['isha']));
     this.zone = zone;
+  }
+
+  // Convert Malay to English month abbr
+  String _getMappedDate(String date) {
+    if(date.contains(new RegExp(r'Mac'))) {
+      return date.replaceFirst(new RegExp(r'Mac'), "Mar");
+    } else if(date.contains(new RegExp(r'Mei'))) {
+      return date.replaceFirst(new RegExp(r'Mei'), "May");
+    } else if(date.contains(new RegExp(r'Okt'))) {
+      return date.replaceFirst(new RegExp(r'Okt'), "Oct");
+    } else if(date.contains(new RegExp(r'Ogos'))) {
+      return date.replaceFirst(new RegExp(r'Ogos'), "Aug");
+    } else if(date.contains(new RegExp(r'Dis'))) {
+      return date.replaceFirst(new RegExp(r'Dis'), "Dec");
+    } else {
+      return date;
+    }
   }
 }

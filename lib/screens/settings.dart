@@ -59,10 +59,13 @@ class SettingsState extends State<SettingsScreen> {
     Constant.getZonSolat().forEach((code, label) {
       categories.add(new DropdownMenuItem(
         //child : new Expanded(child: new Column(children: <Widget>[new Text(label),],)),
-        child: new Text(
+        child: new Container(
+          width: 300.0,
+          child: new Text(
           label,
-          overflow: TextOverflow.clip,
-        ),
+          overflow: TextOverflow.ellipsis,
+        )
+        )  ,
         value: code,
       ));
     });
