@@ -17,4 +17,6 @@ Firebase will be used to store all the created data.
 For help getting started with Flutter, view Flutter online
 [documentation](https://flutter.io/).
 
+## Preview
 
+![](preview.gif)
